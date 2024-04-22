@@ -6,6 +6,6 @@ import NewApp from './NewApp.jsx'
 import Card from './Card.jsx'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <NewApp />
+    <App />
   </React.StrictMode>,
 )

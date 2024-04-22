@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from './Card.jsx';
-
+import Button from './Button.jsx';
+import { useLocation } from 'react-router-dom';
 export default function NewApp() {
   const [pokemon, setPokemon] = useState([]);
   const [randomizedPokemon, setRandomizedPokemon] = useState([]);
@@ -12,13 +13,18 @@ export default function NewApp() {
   const [count, setCount] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [win, setWin] = useState(false);
+  const [scoreReq, setScoreReq] = useState(6);
+
+  const location = useLocation(); 
+
+  const userEmail = location.state ? location.state.id : '';
   useEffect(() => {
     fetchPokemon();
   }, []);
 
   const fetchPokemon = async () => {
     try {
-      const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20");
+      const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=100");
       const data = await response.json();
       const results = data.results;
 
@@ -65,8 +71,10 @@ export default function NewApp() {
   useEffect(()=>{
     if (count == 9){
         setWin(true);
+        
     }else{
         setWin(false);
+
     }
     if(gameOver==true || win == true){
         document.querySelectorAll('.card').forEach((card)=>{
@@ -77,21 +85,44 @@ export default function NewApp() {
             card.style.pointerEvents = 'auto';
         });
     }
-  },[gameOver,count]);
-  const btnClick = () =>
+  },[gameOver,count,scoreReq]);
+  const btnClick = (difficulty) =>
   {
+    setWin(false);
     setGameOver(false);
     setCount(0);
     setClickedonPokemon([]);
     randomizePokemon();
+    if (difficulty == "Easy"){
+      setScoreReq(6);
+  }else if (difficulty == "Medium"){
+      setScoreReq(12);
+  }else if (difficulty == "Hard"){
+      setScoreReq(18);
+  }
+    
+  }
+  const setScore = (difficulty) =>{
+    if (difficulty == "Easy"){
+        setScoreReq(6);
+    }else if (difficulty == "Medium"){
+        setScoreReq(12);
+    }else if (difficulty == "Hard"){
+        setScoreReq(18);
+    }
   }
   return (
     <div>
         <h1>Pokemon Memory Card Game</h1>
+        <h1> User Email: {userEmail} </h1>
         <p>Score</p>
         
         <p>{count}</p>
-      <button class="button-56" onClick={btnClick}>Start</button>
+        <span>
+          <button onClick={btnClick} className="button-56">Start Game</button>
+
+          
+      </span>
       {gameOver && (
         <div className="game-over">
             <h1>Game Over</h1>

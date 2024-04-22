@@ -13,6 +13,37 @@ body{
 }p{
   font-size:20px;
 }
+.login{
+  background-color:white;
+  position:absolute;
+  top:50%;
+  left: 50%;
+  transform:translate(-50%, -50%);
+  color:black;
+  padding:30px;
+  
+  border-right:3px solid black;
+  border-bottom:3px solid black;
+}
+.login form{
+  flex-direction:column;
+  display:flex;
+  
+  margin:auto;
+  gap:30px;
+  width:auto;
+  
+}
+.login input[type="submit"]{
+  width:30%;
+  margin:auto;
+}
+.login form input{
+  font-size:25px;
+  margin-left:5%;
+  margin-right:5%;
+  border: 1px solid black;
+}
 
 .grid div{
   border:1px solid black;
