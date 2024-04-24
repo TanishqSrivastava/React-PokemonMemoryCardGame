@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-
 function Signup() {
   const history = useNavigate();
   const [email, setEmail] = useState("");
@@ -30,7 +29,7 @@ function Signup() {
   }
 
   return (
-    <div className="signup">
+    <div className="login">
       <h1>Signup</h1>
       <form onSubmit={submit}>
         <input
