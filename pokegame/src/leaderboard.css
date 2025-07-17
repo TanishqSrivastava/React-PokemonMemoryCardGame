@@ -1,0 +1,8 @@
+.board-wrapper{display:flex;flex-direction:column;align-items:center;padding:40px}
+.board{list-style:none;padding:0;margin:0;width:320px}
+.board li{display:flex;justify-content:space-between;
+          padding:12px 20px;margin:6px 0;
+          background:#fee6e3;border:2px solid #111;border-radius:8px;
+          box-shadow:4px 4px 0 #111;font-weight:600}
+.rank{width:40px;text-align:center}
+.score{font-family:'Courier New',monospace}

@@ -12,6 +12,14 @@ app.get("/",cors(),(req,res)=>{
 
 })
 
+app.get('/leaderboard', async (req, res) => {
+  const limit = Number(req.query.limit) || 20;
+  const rows = await collection.find({})
+    .sort({ highScore: -1 })
+    .limit(limit)
+    .select('username highScore -_id');
+  res.json(rows);
+});
 
 app.post("/",async(req,res)=>{
     const{email,password}=req.body
@@ -67,9 +75,10 @@ app.get("/highScore", async(req, res)=>{
 
 
 app.post("/signup",async(req,res)=>{
-    const{email,password}=req.body
+    const{email,password, username}=req.body
 
     const data={
+        username: username,
         email:email,
         password:password
     }

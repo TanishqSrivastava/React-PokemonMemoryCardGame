@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from './Card.jsx';
 import Button from './Button.jsx';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 export default function NewApp() {
   const [pokemon, setPokemon] = useState([]);
   const [randomizedPokemon, setRandomizedPokemon] = useState([]);
@@ -127,6 +127,7 @@ export default function NewApp() {
         <h1> User Email: {userEmail} </h1>
         <p>Score: {count}</p>
         <p>High Score: {highScore} </p>
+        <Link to="/leaderboard" className="button-56">Leaderboard</Link>
         
         <span>
           <button onClick={btnClick} className="button-56">Start Game</button>

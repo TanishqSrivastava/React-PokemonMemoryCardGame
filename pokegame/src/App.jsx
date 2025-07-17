@@ -5,6 +5,7 @@ import './App.css'
 import NewApp from './NewApp.jsx';
 import Login from './Login.jsx';
 import Signup from './Signup.jsx';
+import Leaderboard from './Leaderboard.jsx';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 function App() {
   const [count, setCount] = useState(0)
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Login />}/>
           <Route path="/signup" element={<Signup />}/>
           <Route path="/home" element={<NewApp />}/>
+          <Route path="/leaderboard" element={<Leaderboard/>}/>
         </Routes>
       </Router>
     </div>
