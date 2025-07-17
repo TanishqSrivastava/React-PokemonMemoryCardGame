@@ -1,0 +1,814 @@
+app.js:
+<code>
+import express from "express";
+import collection from "./mongo.js";
+import cors from "cors";
+const app = express()
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cors())
+
+
+
+app.get("/",cors(),(req,res)=>{
+
+})
+
+
+app.post("/",async(req,res)=>{
+    const{email,password}=req.body
+
+    try{
+        const check=await collection.findOne({email:email})
+
+        if(check){
+            res.json("exist")
+        }
+        else{
+            res.json("notexist")
+        }
+
+    }
+    catch(e){
+        res.json("fail")
+    }
+
+})
+
+app.post("/highScore",async(req,res)=>{
+    const {email, score} = req.body;
+    try{
+        const user = await collection.findOne({email});
+        if (!user) return res.status(404).json("user not found");
+        if (score > user.highScore){
+            user.highScore = score;
+            await user.save();
+
+        }
+        return res.json({highScore: user.highScore});
+
+    }catch(e){
+        return res.status(500).json("fail");
+    }
+
+
+})
+
+
+app.get("/highScore", async(req, res)=>{
+    const {email} = req.query;
+    try{
+        const user = await collection.findOne({email});
+        if (!user) return res.status(404).json("email not found");
+        return res.json({highScore:user.highScore});
+
+    }catch(e){
+        return res.status(500).json("fail");
+    }
+})
+
+
+app.post("/signup",async(req,res)=>{
+    const{email,password}=req.body
+
+    const data={
+        email:email,
+        password:password
+    }
+
+    try{
+        const check=await collection.findOne({email:email})
+
+        if(check){
+            res.json("exist")
+        }
+        else{
+            res.json("notexist")
+            await collection.insertMany([data])
+        }
+
+    }
+    catch(e){
+        res.json("fail")
+    }
+
+})
+
+app.listen(8000,()=>{
+    console.log("port connected");
+})
+
+</code>
+
+index.html:
+<code>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+</code>
+
+mongo.js:
+<code>
+import mongoose from "mongoose";
+mongoose.connect("mongodb://localhost:27017/pokegame")
+.then(()=>{
+    console.log("mongodb connected");
+})
+.catch((e)=>{
+    console.log(e);
+    console.log('failed');
+})
+
+
+const newSchema=new mongoose.Schema({
+    email:{
+        type:String,
+        required:true
+    },
+    password:{
+        type:String,
+        required:true
+    },
+    highScore: {
+        type: Number,
+        required:true,
+        default:0
+    }
+})
+
+const collection = mongoose.model("collection",newSchema)
+
+export default collection;
+</code>
+
+package.json:
+<code>
+{
+  "name": "pokegame",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-parallax-tilt": "^1.7.214",
+    "react-router-dom": "^6.22.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.56",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "vite": "^5.1.4"
+  }
+}
+
+</code>
+
+README.md:
+<code>
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+</code>
+
+vite.config.js:
+<code>
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+
+</code>
+
+src\App.css:
+<code>
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+</code>
+
+src\App.jsx:
+<code>
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
+import NewApp from './NewApp.jsx';
+import Login from './Login.jsx';
+import Signup from './Signup.jsx';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />}/>
+          <Route path="/signup" element={<Signup />}/>
+          <Route path="/home" element={<NewApp />}/>
+        </Routes>
+      </Router>
+    </div>
+  )
+}
+
+export default App
+
+</code>
+
+src\Audio.jsx:
+<code>
+import react, {useState, useEffect} from 'react'
+
+
+
+export default function Audio({src}){
+    const [playing, notPlaying] = useState(false);
+    return(
+        <>
+        <button className="audio" onClick={handleAudio}>Audio</button>
+        </>
+    )
+}
+</code>
+
+src\Button.jsx:
+<code>
+import react, {useState, useEffect} from 'react';
+
+
+export default function Button({difficulty, afterClick}){
+    function handleClick(){
+        afterClick(difficulty);
+    }
+    return(
+        <>
+        <button className="button-56" onClick={handleClick}>{difficulty}</button>
+        </>
+    )
+
+}
+</code>
+
+src\Card.jsx:
+<code>
+import react, {useState, useEffect} from 'react'
+import axios from 'axios'
+import Tilt from 'react-parallax-tilt'
+export default function Card({name, imageUrl, afterClick}){
+    const handleClick = () =>{
+        afterClick(name, imageUrl);
+    }
+    return(
+        <Tilt glareEnable={false} tiltMaxAngleX={10} 
+        tiltMaxAngleY={10} perspective={1000} 
+        >
+        <div className="card" onClick={handleClick}>
+            <h1>{name}</h1>
+            <img src={imageUrl} alt={name}/>
+        </div>
+        </Tilt>
+    )
+}
+</code>
+
+src\index.css:
+<code>
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+.grid{
+  display:grid;
+  grid-template:1fr 1fr 1fr 1fr/1fr 1fr 1fr 1fr;
+  gap:20px;
+}
+body{
+  font-family:'Pixelify Sans', sans-serif;
+  background-image :url('./assets/pokemon-in-the-wild.png');
+  background-size:cover;
+  display:flex;
+
+}p{
+  font-size:20px;
+}
+.login{
+  background-color:white;
+  position:absolute;
+  top:50%;
+  left: 50%;
+  transform:translate(-50%, -50%);
+  color:black;
+  padding:30px;
+  
+  border-right:3px solid black;
+  border-bottom:3px solid black;
+}
+.login form{
+  flex-direction:column;
+  display:flex;
+  
+  margin:auto;
+  gap:30px;
+  width:auto;
+  
+}
+.login input[type="submit"]{
+  width:30%;
+  margin:auto;
+}
+.login form input{
+  font-size:25px;
+  margin-left:5%;
+  margin-right:5%;
+  border: 1px solid black;
+}
+
+.grid div{
+  border:1px solid black;
+  border:1px solid black;
+}
+.card{
+  background-color:rgba(57, 57, 57, 0.5);
+  pointer-events:auto;
+}
+button{
+  font-size:25px;
+  margin-bottom:20px;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.game-over{
+  position:fixed;
+  top:50%;
+  left:50%;
+  width: 40%;
+  height:40%;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between; 
+  transform:translate(-50%,-50%);
+  background-color:#f1f1f1;
+  border:2px solid black;
+  padding:35px;
+  z-index:25;
+
+}
+
+.start-btn{
+  text-align: center;
+display: inline-block;
+margin:5px;
+  font-weight: bold;
+  padding: 10px 0 10px 10px ;
+  background-color: lightgray;
+  text-shadow: -1px -1px black, 1px 1px white;
+  color: gray;
+  -webkit-border-radius: 7px;
+-moz-border-radius: 7px;
+-o-border-radius: 7px;
+border-radius: 7px;
+  box-shadow: 0 .2em gray; 
+  cursor: pointer;
+
+}
+
+
+
+/* CSS */
+.button-56 {
+  margin:auto;
+  margin-bottom:30px;
+  align-items: center;
+  background-color: #fee6e3;
+  border: 2px solid #111;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #111;
+  cursor: pointer;
+  display: flex;
+  font-family: Inter,sans-serif;
+  font-size: 16px;
+  height: 48px;
+  justify-content: center;
+  line-height: 24px;
+  max-width: 100%;
+  padding: 0 25px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-56:after {
+  background-color: #111;
+  border-radius: 8px;
+  content: "";
+  display: block;
+  height: 48px;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  top: -2px;
+  transform: translate(8px, 8px);
+  transition: transform .2s ease-out;
+  z-index: -1;
+}
+
+.button-56:hover:after {
+  transform: translate(0, 0);
+}
+
+.button-56:active {
+  background-color: #ffdeda;
+  outline: 0;
+}
+
+.button-56:hover {
+  outline: 0;
+}
+
+@media (min-width: 768px) {
+  .button-56 {
+    padding: 0 40px;
+  }
+}
+</code>
+
+src\Login.jsx:
+<code>
+// Login.jsx
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+
+function Login() {
+  const history = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function submit(e) {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:8000/", {
+        email,
+        password,
+      });
+      const data = response.data;
+
+      if (data === "exist") {
+        history("/home", { state: { id: email } }); // Pass email ID as state
+      } else if (data === "notexist") {
+        alert("User not signed up");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong");
+    }
+  }
+
+  return (
+    <div className="login">
+      <h1>Login</h1>
+      <form onSubmit={submit}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+        />
+        <input type="submit" value="Login" />
+      </form>
+      <br />
+      <p>OR</p>
+      <br />
+      <Link to="/signup">Signup Page</Link>
+    </div>
+  );
+}
+
+export default Login;
+
+</code>
+
+src\main.jsx:
+<code>
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+import NewApp from './NewApp.jsx'
+import Card from './Card.jsx'
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
+</code>
+
+src\NewApp.jsx:
+<code>
+
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Card from './Card.jsx';
+import Button from './Button.jsx';
+import { useLocation } from 'react-router-dom';
+export default function NewApp() {
+  const [pokemon, setPokemon] = useState([]);
+  const [randomizedPokemon, setRandomizedPokemon] = useState([]);
+  const [shortPokemon, setShortPokemon] = useState([]);
+  const [clickedonPokemon, setClickedonPokemon] = useState([]);
+  const [count, setCount] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+  const [win, setWin] = useState(false);
+  const [scoreReq, setScoreReq] = useState(6);
+  const [highScore, setHighScore] = useState(0);
+
+  const location = useLocation(); 
+
+  const userEmail = location.state ? location.state.id : '';
+  useEffect(() => {
+    fetchPokemon();
+  }, []);
+
+  const fetchPokemon = async () => {
+    try {
+      const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=100");
+      const data = await response.json();
+      const results = data.results;
+
+      const newPokemon = await Promise.all(results.map(async (pokemon) => {
+        const response = await fetch(pokemon.url);
+        const data = await response.json();
+        return {
+          name: pokemon.name,
+          imageUrl: data.sprites.front_default
+        };
+      }));
+
+      setPokemon(newPokemon);
+      setShortPokemon(newPokemon.sort(()=> 0.5 - Math.random()).slice(0,9));
+      setRandomizedPokemon(newPokemon); // Initially set to the same list
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const randomizePokemon = () => {
+    const shuffledPokemon = [...shortPokemon]; 
+    for (let i = shuffledPokemon.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledPokemon[i], shuffledPokemon[j]] = [shuffledPokemon[j], shuffledPokemon[i]]; // Swap elements to shuffle
+    }
+    setRandomizedPokemon([...shuffledPokemon]); // Ensure React detects the change
+  };
+
+
+  const checkClicked = (name, imageUrl) =>{
+    console.log(name + " " + imageUrl + " clicked");
+    if (clickedonPokemon.includes(name)){
+        console.log("You lose!");
+        setGameOver(true);
+    }else{
+    setCount(count+1);
+    randomizePokemon();
+    setClickedonPokemon([...clickedonPokemon, name]);
+    console.log(clickedonPokemon);
+    setWin(false);
+    }
+  }
+  useEffect(()=>{
+    if (count == 9){
+        setWin(true);
+        
+    }else{
+        setWin(false);
+
+    }
+    if(gameOver==true || win == true){
+        axios.post("http://localhost:8000/highScore", {
+          email: userEmail,
+          score: count
+        }).then(res=>setHighScore(res.data.highScore)).catch(console.error);
+        document.querySelectorAll('.card').forEach((card)=>{
+            card.style.pointerEvents = 'none';
+        });
+    }else{
+        document.querySelectorAll('.card').forEach((card)=>{
+            card.style.pointerEvents = 'auto';
+        });
+    }
+  },[gameOver,count,scoreReq]);
+  const btnClick = (difficulty) =>
+  {
+    setWin(false);
+    setGameOver(false);
+    setCount(0);
+    setClickedonPokemon([]);
+    randomizePokemon();
+    if (difficulty == "Easy"){
+      setScoreReq(6);
+  }else if (difficulty == "Medium"){
+      setScoreReq(12);
+  }else if (difficulty == "Hard"){
+      setScoreReq(18);
+  }
+    
+  }
+  const setScore = (difficulty) =>{
+    if (difficulty == "Easy"){
+        setScoreReq(6);
+    }else if (difficulty == "Medium"){
+        setScoreReq(12);
+    }else if (difficulty == "Hard"){
+        setScoreReq(18);
+    }
+  }
+
+  useEffect(()=>{
+    if (!userEmail) return;
+    axios.get("http://localhost:8000/highScore", {params: {email: userEmail}}).then(res =>  setHighScore(res.data.highScore)).catch(console.error);
+  }, [userEmail]);
+  return (
+    <div>
+        <h1>Pokemon Memory Card Game</h1>
+        <h1> User Email: {userEmail} </h1>
+        <p>Score: {count}</p>
+        <p>High Score: {highScore} </p>
+        
+        <span>
+          <button onClick={btnClick} className="button-56">Start Game</button>
+
+          
+      </span>
+      {gameOver && (
+        <div className="game-over">
+            <h1>Game Over</h1>
+            <p>Your score is {count}</p>
+            <button class="button-56" onClick={btnClick}>Start Over</button>
+        </div>
+      )}
+      {win && (
+        <div className="game-over">
+            <h1>You Win!</h1>
+            <p>Your score is {count}</p>
+            <button class="button-56" onClick={btnClick}>Start Over</button>
+        </div>
+      
+      )}
+      <div className="grid">
+        {randomizedPokemon.map((p, index) => (
+          <Card  key={index} name={p.name} imageUrl={p.imageUrl} afterClick={checkClicked}/>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+</code>
+
+src\Signup.jsx:
+<code>
+// Signup.jsx
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+function Signup() {
+  const history = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function submit(e) {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:8000/signup", {
+        email,
+        password,
+      });
+      const data = response.data;
+
+      if (data === "exist") {
+        alert("User already exists");
+      } else if (data === "notexist") {
+        history("/home", { state: { id: email } }); // Pass email ID as state
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong");
+    }
+  }
+
+  return (
+    <div className="login">
+      <h1>Signup</h1>
+      <form onSubmit={submit}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+        />
+        <input type="submit" value="Signup" />
+      </form>
+      <br />
+      <p>OR</p>
+      <br />
+      <Link to="/">Login Page</Link>
+    </div>
+  );
+}
+
+export default Signup;
+
+</code>
+

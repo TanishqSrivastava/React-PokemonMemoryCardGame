@@ -14,6 +14,7 @@ export default function NewApp() {
   const [gameOver, setGameOver] = useState(false);
   const [win, setWin] = useState(false);
   const [scoreReq, setScoreReq] = useState(6);
+  const [highScore, setHighScore] = useState(0);
 
   const location = useLocation(); 
 
@@ -77,6 +78,10 @@ export default function NewApp() {
 
     }
     if(gameOver==true || win == true){
+        axios.post("http://localhost:8000/highScore", {
+          email: userEmail,
+          score: count
+        }).then(res=>setHighScore(res.data.highScore)).catch(console.error);
         document.querySelectorAll('.card').forEach((card)=>{
             card.style.pointerEvents = 'none';
         });
@@ -111,13 +116,18 @@ export default function NewApp() {
         setScoreReq(18);
     }
   }
+
+  useEffect(()=>{
+    if (!userEmail) return;
+    axios.get("http://localhost:8000/highScore", {params: {email: userEmail}}).then(res =>  setHighScore(res.data.highScore)).catch(console.error);
+  }, [userEmail]);
   return (
     <div>
         <h1>Pokemon Memory Card Game</h1>
         <h1> User Email: {userEmail} </h1>
-        <p>Score</p>
+        <p>Score: {count}</p>
+        <p>High Score: {highScore} </p>
         
-        <p>{count}</p>
         <span>
           <button onClick={btnClick} className="button-56">Start Game</button>
 

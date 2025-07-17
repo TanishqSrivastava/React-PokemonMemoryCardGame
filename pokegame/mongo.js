@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-mongoose.connect("mongodb+srv://NotYashu:anoop123@cluster0.sjlr1hy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+mongoose.connect("mongodb://localhost:27017/pokegame")
 .then(()=>{
     console.log("mongodb connected");
 })
@@ -17,6 +17,15 @@ const newSchema=new mongoose.Schema({
     password:{
         type:String,
         required:true
+    },
+    highScore: {
+        type: Number,
+        required:true,
+        default:0
+    },
+    username: {
+        type: String,
+        required: true
     }
 })
 

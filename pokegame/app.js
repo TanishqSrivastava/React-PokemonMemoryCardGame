@@ -33,6 +33,37 @@ app.post("/",async(req,res)=>{
 
 })
 
+app.post("/highScore",async(req,res)=>{
+    const {email, score} = req.body;
+    try{
+        const user = await collection.findOne({email});
+        if (!user) return res.status(404).json("user not found");
+        if (score > user.highScore){
+            user.highScore = score;
+            await user.save();
+
+        }
+        return res.json({highScore: user.highScore});
+
+    }catch(e){
+        return res.status(500).json("fail");
+    }
+
+
+})
+
+
+app.get("/highScore", async(req, res)=>{
+    const {email} = req.query;
+    try{
+        const user = await collection.findOne({email});
+        if (!user) return res.status(404).json("email not found");
+        return res.json({highScore:user.highScore});
+
+    }catch(e){
+        return res.status(500).json("fail");
+    }
+})
 
 
 app.post("/signup",async(req,res)=>{
