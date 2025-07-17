@@ -381,6 +381,7 @@
   },
   "repository": "heroku/cli",
   "scripts": {
+    "start": "node app.js",
     "build": "rm -rf lib && tsc",
     "build:dev": "rm -rf lib && tsc --sourcemap",
     "lint": "eslint . --ext .ts --config ../../.eslintrc --ignore-path ../../.eslintignore-lib",
